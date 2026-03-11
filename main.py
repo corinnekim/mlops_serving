@@ -14,14 +14,13 @@ model = joblib.load('model.joblib')
 class PredictRequest(BaseModel):
     data: List[float]
 
-# 4. '/predict' 주소로 데이터(POST)가 들어오면 실행될 경로를 설정합니다.
+# 4. 브라우저에서 바로 확인하는 용도 (http://IP주소/)
+@app.get("/")
+def home():
+    return {"message": "CI/CD 자동화 파이프라인 성공"}
+
+# 5. 붓꽃 클래스 예측용 용도 (http://IP주소/predict)
 @app.post("/predict")
-# 테스트용 코드
-def test():
-    return {"message": "CI/CD pipeline is made!"}
 def predict(request: PredictRequest):
-    # 5. 입력받은 데이터를 모델이 인식할 수 있는 행렬 형태로 변환하여 예측합니다.
     prediction = model.predict([request.data])
-    
-    # 6. 예측된 결과값(정수)을 JSON 형식의 딕셔너리로 최종 반환합니다.
     return {"class_index": int(prediction[0])}

@@ -35,34 +35,34 @@ jobs:
 
 
 # CD
-deploy:
-    needs: build-and-push # 빌드가 성공해야 배포 시작
-    runs-on: ubuntu-latest
-    
-    steps:
-      - name: Deploy to GCP VM via SSH
-        uses: appleboy/ssh-action@v1.0.3
-        with:
-          host: ${{ secrets.GCP_VM_HOST }}      # VM의 외부 IP
-          username: ${{ secrets.GCP_VM_USERNAME }} # SSH 접속 계정 (보통 gcp 계정 이름)
-          key: ${{ secrets.GCP_SSH_KEY }}       # SSH Private Key
-          port: 22
-          script: |
-            # 1. Docker 로그인 (Private 레포지토리인 경우 필요)
-            echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
-            
-            # 2. 기존 컨테이너 중지 및 삭제 (이미 실행 중인 경우)
-            docker stop my-app-container || true
-            docker rm my-app-container || true
-            
-            # 3. 최신 이미지 Pull
-            docker pull ${{ secrets.DOCKERHUB_USERNAME }}/my-ml-app:latest
-            
-            # 4. 새 컨테이너 실행
-            docker run -d \
-              --name my-app-container \
-              -p 80:8000 \
-              ${{ secrets.DOCKERHUB_USERNAME }}/my-ml-app:latest
-            
-            # 5. 미사용 이미지 정리 (용량 관리)
-            docker image prune -f
+  deploy:
+      needs: build-and-push # 빌드가 성공해야 배포 시작
+      runs-on: ubuntu-latest
+      
+      steps:
+        - name: Deploy to GCP VM via SSH
+          uses: appleboy/ssh-action@v1.0.3
+          with:
+            host: ${{ secrets.GCP_VM_HOST }}      # VM의 외부 IP
+            username: ${{ secrets.GCP_VM_USERNAME }} # SSH 접속 계정 (보통 gcp 계정 이름)
+            key: ${{ secrets.GCP_SSH_KEY }}       # SSH Private Key
+            port: 22
+            script: |
+              # 1. Docker 로그인 (Private 레포지토리인 경우 필요)
+              echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
+              
+              # 2. 기존 컨테이너 중지 및 삭제 (이미 실행 중인 경우)
+              docker stop my-app-container || true
+              docker rm my-app-container || true
+              
+              # 3. 최신 이미지 Pull
+              docker pull ${{ secrets.DOCKERHUB_USERNAME }}/my-ml-app:latest
+              
+              # 4. 새 컨테이너 실행
+              docker run -d \
+                --name my-app-container \
+                -p 80:8000 \
+                ${{ secrets.DOCKERHUB_USERNAME }}/my-ml-app:latest
+              
+              # 5. 미사용 이미지 정리 (용량 관리)
+              docker image prune -f

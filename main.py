@@ -16,6 +16,9 @@ class PredictRequest(BaseModel):
 
 # 4. '/predict' 주소로 데이터(POST)가 들어오면 실행될 경로를 설정합니다.
 @app.post("/predict")
+# 테스트용 코드
+def test():
+    return {"message": "CI/CD pipeline is made!"}
 def predict(request: PredictRequest):
     # 5. 입력받은 데이터를 모델이 인식할 수 있는 행렬 형태로 변환하여 예측합니다.
     prediction = model.predict([request.data])

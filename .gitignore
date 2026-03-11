@@ -1,0 +1,8 @@
+# Python 캐시
+__pycache__/
+
+# 테스트용 노트북
+test.ipynb
+
+# Mac 환경 설정 파일
+.DS_Store
